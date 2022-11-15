@@ -1,0 +1,43 @@
+---
+title: "ARIMA"
+author: "Tarun"
+date: "11/14/2022"
+output: html_document
+---
+
+```{r}
+library(fpp)
+library(fpp2)
+library(forecast)
+
+#explanation give. Ploting data.
+plot(AirPassengers)
+AirPaswin <- window(AirPassengers, start = 1956)
+nsdiffs(AirPaswin)
+ndiffs(AirPaswin)
+ndiffs((diff(AirPaswin,12)))
+tsdisplay(diff(diff(AirPaswin,12)))
+fit1 <- auto.arima(AirPaswin,trace=TRUE, stepwise = FALSE)
+#Best model: ARIMA(1,1,0)(0,1,0)
+#p=1 - Model is considering one previous time series values from ACF
+#q=0 - Model is considering no previous time series values from ACF of residuals
+#P=0 - Model is considering no previous time series values from PACF
+#Q=0 - Model is considering no previous time series values from PACF of residuals
+fit1
+#Residual Analysis
+Acf(fit1$residuals)
+#Data shows white noice. Model works best.
+Box.test(residuals(fit1), lag=20, type="Ljung")
+#p>0.05. Model is a good model.
+plot.ts(residuals(fit1))
+#Residuals are random and mean is around zero.
+hist(fit1$residuals)
+#Normally distributed.
+#Mean is around zero but the plot is left skewed.
+tsdiag(fit1)
+# 2 values have z=2 which can be neglected as the data has over 50 points.
+# All Acf values are within confidence interval. The model is a good forecast.
+# All p values are well above the confidence level.
+
+# Overall, the ARIMA model is a good forecast
+```
